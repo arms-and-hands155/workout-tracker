@@ -1,13 +1,13 @@
-Date,Day type,Exercise,Sets,Reps,Weight,Completed
-2025-01-01,Pull,Deadlift,3,5,225,Yes
-2025-01-01,Pull,Barbell Row,3,8,135,Yes
-2025-01-01,Pull,Lat Pulldown,3,10,120,No
-2025-01-03,Push,Bench Press,3,8,185,Yes
-2025-01-03,Push,Overhead Press,3,8,115,Yes
-2025-01-03,Push,Tricep Pushdown,3,12,70,Yes
-2025-01-05,Legs,Squat,3,5,245,Yes
-2025-01-05,Legs,Leg Press,3,10,360,No
-2025-01-05,Legs,Leg Curl,3,12,90,Yes
-2025-01-08,Pull,Deadlift,3,5,235,Yes
-2025-01-08,Pull,Barbell Row,3,8,140,Yes
-2025-01-08,Pull,Lat Pulldown,3,10,125,Yes
+Date,Day type,Exercise,Set number,Reps,Weight,Completed
+2025-01-01,Pull,Deadlift,1,5,225,Yes
+2025-01-01,Pull,Deadlift,2,5,225,Yes
+2025-01-01,Pull,Barbell Row,1,8,135,Yes
+2025-01-01,Pull,Barbell Row,2,8,130,No
+2025-01-08,Pull,Deadlift,1,5,235,Yes
+2025-01-08,Pull,Deadlift,2,5,235,Yes
+2025-01-08,Pull,Barbell Row,1,8,140,Yes
+2025-01-08,Pull,Barbell Row,2,8,140,Yes
+2025-01-03,Push,Bench Press,1,8,185,Yes
+2025-01-03,Push,Bench Press,2,8,185,Yes
+2025-01-03,Push,Overhead Press,1,8,115,Yes
+2025-01-03,Push,Overhead Press,2,8,110,No
