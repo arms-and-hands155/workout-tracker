@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import streamlit as st
 
 def load(file):
     try:
@@ -18,6 +19,22 @@ def save(workout, file):
     except OSError:
         return
 
+def recent_day(type):
+    smt_df = df[df['Day type'] == type]
+    recent_date = smt_df['Date'].max()
 
-df = pd.DataFrame({"calories": [1,2,3,4,5], "height": [1,2,1,2,2]})
-save(df,'workout-tracker/workouts.csv')
+    return smt_df[smt_df['Date'] == recent_date]
+
+df= load('/Users/armand_k/Workout app/workout-tracker/workouts.csv')
+
+select = st.selectbox(
+    "Workout Type",
+    ["Push", "Pull", "Legs", "Upper", "Lower"],
+    index=None,
+    placeholder="Select a Workout template",
+    accept_new_options=True,
+)
+if select is not None:
+    check = recent_day(select)
+    st.write(f"Last {select} day: ", check if not check.empty else "No data provided")
+
