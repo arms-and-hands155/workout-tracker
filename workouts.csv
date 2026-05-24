@@ -1,13 +1,19 @@
 Date,Day type,Exercise,Set number,Reps,Weight,Completed
-2025-01-01,Pull,Deadlift,1,5,225,Yes
-2025-01-01,Pull,Deadlift,2,5,225,Yes
-2025-01-01,Pull,Barbell Row,1,8,135,Yes
-2025-01-01,Pull,Barbell Row,2,8,130,No
-2025-01-08,Pull,Deadlift,1,5,235,Yes
-2025-01-08,Pull,Deadlift,2,5,235,Yes
-2025-01-08,Pull,Barbell Row,1,8,140,Yes
-2025-01-08,Pull,Barbell Row,2,8,140,Yes
-2025-01-03,Push,Bench Press,1,8,185,Yes
-2025-01-03,Push,Bench Press,2,8,185,Yes
-2025-01-03,Push,Overhead Press,1,8,115,Yes
-2025-01-03,Push,Overhead Press,2,8,110,No
+2025-01-01,Pull,Deadlift,1,5,225,True
+2025-01-01,Pull,Deadlift,2,5,225,True
+2025-01-01,Pull,Barbell Row,1,8,135,True
+2025-01-01,Pull,Barbell Row,2,8,130,False
+2025-01-08,Pull,Deadlift,1,5,235,True
+2025-01-08,Pull,Deadlift,2,5,235,True
+2025-01-08,Pull,Barbell Row,1,8,140,True
+2025-01-08,Pull,Barbell Row,2,8,140,True
+2025-01-03,Push,Bench Press,1,8,185,True
+2025-01-03,Push,Bench Press,2,8,185,True
+2026-05-23,Pull,Deadlift,1,5,235,False
+2026-05-23,Pull,Deadlift,2,5,235,False
+2026-05-23,Pull,Barbell Row,1,8,140,False
+2026-05-23,Pull,Barbell Row,2,8,140,False
+2026-05-23,Pull,Deadlift,1,5,235,False
+2026-05-23,Pull,Deadlift,2,5,235,False
+2026-05-23,Pull,Barbell Row,1,8,140,False
+2026-05-23,Pull,Barbell Row,2,8,140,False
