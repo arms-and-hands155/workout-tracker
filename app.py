@@ -45,8 +45,7 @@ def overload(exercise_df):
 df = load(file_location)
 st.title("🏋️‍♂️ Workout Tracker")
 
-#History display
-
+# History display
 if "show_history" not in st.session_state:
     st.session_state.show_history = False
 
@@ -54,16 +53,32 @@ if st.button("View History"):
     st.session_state.show_history = not st.session_state.show_history
 
 if st.session_state.show_history:
-    sort = st.multiselect(
-    "Filter:",
-    ["Day type", "Exercise", 'Date'],
-)
+   
 
-    if sort:
-        sorted_df = df.sort_values(by=sort, ascending=False)
-        st.dataframe(sorted_df, use_container_width=True)
+    filter_choice = st.radio("Filter History By:", ["None", "Day type", "Exercise"], horizontal=True)
+
+    history_df = df.copy()
+
+    if filter_choice == "Day type":
+        day_filter = st.selectbox(
+            "Select Workout Type to view",
+            ["Push", "Pull", "Legs", "Upper", "Lower"],
+            index=None
+        )
+        if day_filter:
+            history_df = history_df[history_df['Day type'] == day_filter]
+
+    elif filter_choice == "Exercise":
+        unique_ex = df['Exercise'].unique().tolist()
+        ex_filter = st.selectbox("Select Exercise to view", unique_ex, index=None)
+        if ex_filter:
+            history_df = history_df[history_df['Exercise'] == ex_filter]
+
+    history_df = history_df.sort_values(by="Date", ascending=False)
+    if history_df.empty:
+        st.write("No history found matching those filters.")
     else:
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(history_df, use_container_width=True)
 
 
 select = st.selectbox( #Picking a workout type
