@@ -3,6 +3,7 @@ import os
 import streamlit as st
 from datetime import date
 from pathlib import Path
+from numpy.random import default_rng as rng
 
 script_path = Path(__file__).resolve()
 project_root = script_path.parent
@@ -48,7 +49,7 @@ def overload(exercise_df):
     return 0
 
 df = load(file_location)
-st.title("🏋️‍♂️ Workout Tracker")
+st.title("Workout Tracker")
 
 # History display
 if "show_history" not in st.session_state:
@@ -73,6 +74,23 @@ if st.session_state.show_history:
 
     history_df = history_df.sort_values(by="Date", ascending=False)
     st.dataframe(history_df, use_container_width=True, hide_index=True)
+
+# Workout progress display
+if "show_workout" not in st.session_state:
+    st.session_state.show_workout = False
+
+if st.button("View Workout Progression"):
+    st.session_state.show_workout = not st.session_state.show_workout
+
+if st.session_state.show_workout:
+    unique_ex = df['Exercise'].unique().tolist()
+    if unique_ex:
+        selected_ex = st.selectbox("Select Exercise to Visualize", unique_ex)
+        chart_data = df[df['Exercise'] == selected_ex].copy()
+        if not chart_data.empty:
+            st.line_chart(chart_data, x="Date", y="Weight")
+        else:
+            st.info("No weight data found for this exercise.")
 
 st.divider()
 
