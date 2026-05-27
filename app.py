@@ -13,7 +13,9 @@ def load(file):
     if not file.exists():
         return pd.DataFrame(columns=["Date", "Day type", "Exercise", "Set column", "Reps", "Weight", "Completed"])
     try:
-        return pd.read_csv(file, parse_dates=["Date"])
+        df = pd.read_csv(file, parse_dates=["Date"])
+        df['Date'] = df['Date'].dt.date 
+        return df
     except pd.errors.EmptyDataError:
         return pd.DataFrame(columns=["Date", "Day type", "Exercise", "Set column", "Reps", "Weight", "Completed"])
 
@@ -28,10 +30,12 @@ def save(workout, file): #Save and update file
 
 def recent_day(type): #Get the most recent workout of type selected
     smt_df = df[df['Day type'] == type]
+    if smt_df.empty:
+        return pd.DataFrame()
+    
     recent_date = smt_df['Date'].max()
-    smt_df = smt_df.drop('Day type', axis=1)
-
-    return smt_df[smt_df['Date'] == recent_date]
+    smt_df = smt_df[smt_df['Date'] == recent_date]
+    return smt_df.drop('Day type', axis=1)
 
 def overload(exercise_df):
     if not exercise_df.empty and exercise_df['Completed'].all():
@@ -40,6 +44,27 @@ def overload(exercise_df):
 
 df = load(file_location)
 st.title("🏋️‍♂️ Workout Tracker")
+
+#History display
+
+if "show_history" not in st.session_state:
+    st.session_state.show_history = False
+
+if st.button("View History"):
+    st.session_state.show_history = not st.session_state.show_history
+
+if st.session_state.show_history:
+    sort = st.multiselect(
+    "Filter:",
+    ["Day type", "Exercise", 'Date'],
+)
+
+    if sort:
+        sorted_df = df.sort_values(by=sort, ascending=False)
+        st.dataframe(sorted_df, use_container_width=True)
+    else:
+        st.dataframe(df, use_container_width=True)
+
 
 select = st.selectbox( #Picking a workout type
     "Workout Type",
