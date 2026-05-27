@@ -3,7 +3,6 @@ import os
 import streamlit as st
 from datetime import date
 from pathlib import Path
-from numpy.random import default_rng as rng
 
 script_path = Path(__file__).resolve()
 project_root = script_path.parent
@@ -13,13 +12,11 @@ def load(file):
     if not file.exists():
         return pd.DataFrame(columns=["Date", "Day type", "Exercise", "Set column", "Reps", "Weight", "Completed"])
     try:
-        df = pd.read_csv(file, parse_dates=["Date"], on_bad_lines='warn') #skip over any potential broken lines
+        df = pd.read_csv(file, parse_dates=["Date"], on_bad_lines='warn')
         if not df.empty:
             df['Date'] = df['Date'].dt.date 
         return df
-    except pd.errors.EmptyDataError:
-        return pd.DataFrame(columns=["Date", "Day type", "Exercise", "Set column", "Reps", "Weight", "Completed"])
-    except Exception as e:
+    except Exception:
         return pd.DataFrame(columns=["Date", "Day type", "Exercise", "Set column", "Reps", "Weight", "Completed"])
 
 def save(workout, file):
@@ -51,7 +48,6 @@ def overload(exercise_df):
 df = load(file_location)
 st.title("Workout Tracker")
 
-# History display
 if "show_history" not in st.session_state:
     st.session_state.show_history = False
 
@@ -75,7 +71,6 @@ if st.session_state.show_history:
     history_df = history_df.sort_values(by="Date", ascending=False)
     st.dataframe(history_df, use_container_width=True, hide_index=True)
 
-# Workout progress display
 if "show_workout" not in st.session_state:
     st.session_state.show_workout = False
 
@@ -87,10 +82,9 @@ if st.session_state.show_workout:
     if unique_ex:
         selected_ex = st.selectbox("Select Exercise to Visualize", unique_ex)
         chart_data = df[df['Exercise'] == selected_ex].copy()
+        chart_data = chart_data.groupby('Date')['Weight'].max().reset_index()
         if not chart_data.empty:
             st.line_chart(chart_data, x="Date", y="Weight")
-        else:
-            st.info("No weight data found for this exercise.")
 
 st.divider()
 
@@ -106,27 +100,33 @@ if select is not None:
     
     if "current_day" not in st.session_state or st.session_state.current_day != select:
         st.session_state.current_day = select
+        st.session_state.deleted_exercises = []
         st.session_state.extra_exercises = []
         st.session_state.set_counts = {}
-        
         if not check.empty:
             for e in check['Exercise'].unique():
                 st.session_state.set_counts[e] = len(check[check['Exercise'] == e])
 
     data = []
-    
-    # Master exercise list
     history_exercises = list(check['Exercise'].unique()) if not check.empty else []
-    all_current_exercises = history_exercises + st.session_state.extra_exercises
+    all_current_exercises = [e for e in (history_exercises + st.session_state.extra_exercises) if e not in st.session_state.deleted_exercises]
 
-    # Main Loop for Exercises
     for e in all_current_exercises:
         check_exercise = check[check['Exercise'] == e] if not check.empty else pd.DataFrame()
         bonus = overload(check_exercise)
         
-        st.subheader(e, divider="red")
-        current_sets = st.session_state.set_counts.get(e, 1)
+        # UI Header and Delete Button
+        title_col, delete_col = st.columns([5, 1])
+        with title_col:
+            st.subheader(e, divider="red")
+        with delete_col:
+            if st.button("🗑️", key=f"delete_ex_{e}"):
+                st.session_state.deleted_exercises.append(e)
+                if e in st.session_state.extra_exercises:
+                    st.session_state.extra_exercises.remove(e)
+                st.rerun()
 
+        current_sets = st.session_state.set_counts.get(e, 1)
         for j in range(current_sets):
             if not check_exercise.empty and j < len(check_exercise):
                 prev_reps = int(check_exercise.iloc[j]['Reps'])
@@ -137,7 +137,6 @@ if select is not None:
 
             st.write(f"**Set {j+1}**")
             col1, col2, col3 = st.columns(3)
-
             with col1:
                 reps = st.number_input("Reps", value=prev_reps, key=f"reps_{e}_{j}")
             with col2:
@@ -156,7 +155,6 @@ if select is not None:
                 "Completed": complete
             })
 
-        # Set modification buttons per exercise
         btn_col1, btn_col2 = st.columns(2)
         if btn_col1.button(f"➕ Add Set to {e}", key=f"add_{e}"):
             st.session_state.set_counts[e] = st.session_state.set_counts.get(e, 1) + 1
@@ -167,20 +165,14 @@ if select is not None:
                 st.rerun()
 
     st.divider()
-    st.write("Add Exercuse")
-    new_ex_name = st.text_input("Exercise Name", placeholder="e.g. Incline Bench", key="new_ex_input")
-    
+    new_ex_name = st.text_input("Add Exercise", placeholder="e.g. Incline Bench", key="new_ex_input")
     if st.button("➕ Add New Exercise"):
         if new_ex_name and new_ex_name not in all_current_exercises:
             st.session_state.extra_exercises.append(new_ex_name)
             st.session_state.set_counts[new_ex_name] = 1
             st.rerun()
-        else:
-            st.warning("Invalid name or exercise already exists.")
 
     if st.button("Log Workout", type="primary"):
         if data:
             save(pd.DataFrame(data), file_location)
             st.success("Workout logged successfully!")
-        else:
-            st.warning("No data to save.")
